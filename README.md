@@ -1,7 +1,73 @@
-# Tauri + React + Typescript
+---
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+# 🤖 PROJECT KODOKU - AI AGENT HANDOVER DOCUMENT (v2.0: GH Pages Edition)
 
-## Recommended IDE Setup
+**[ATTENTION AI]:** このドキュメントは、国家運営シミュレーター「Project KODOKU」の開発コンテキスト、哲学、およびシステムアーキテクチャを完全に網羅した引き継ぎ資料です。これ以降のコード生成や提案は、必ず以下の仕様と哲学に厳密に従ってください。
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+## 1. プロジェクトの基本情報
+
+* **プロジェクト名:** Project KODOKU: Episode Japan
+* **ジャンル:** 硬派・国家運営＆政治シミュレーター（サンドボックス型）
+* **プラットフォーム:** Webブラウザ（GitHub Pagesによる静的ホスティング）※Tauriによるデスクトップ化はオプションとして残す
+* **開発のコア哲学:「悪の凡庸さ（The Banality of Evil）」**
+* このゲームに「正解」や「良い選択肢」は存在しない。すべての政策には冷酷なトレードオフ（代償）が伴う。
+* ゲーム側からプレイヤーの道徳性をジャッジしない。ただ淡々と因果律を計算し、結果を返すのみ。
+* **UIの絶対原則:** 事務的で冷徹な「業務ツール（テクノクラートのコンソール）」に徹すること。「消費税1%引き上げ」のボタンと「戒厳令発布」のボタンは、完全に同じフォント、同じサイズ、同じ色でなければならない。ゲーム的な警告や派手な演出は一切排除する。
+
+
+
+## 2. 技術スタック（完全クライアントサイド・アーキテクチャ）
+
+サーバー（Python APIなど）は一切使用しない。すべての演算はユーザーのブラウザ上で行われ、GitHub Pagesで完全に無料でホスティング可能な静的サイトとして構築する。
+
+* **フロントエンド (UI層):** React (TypeScript) + Vite
+* **3Dマップエンジン:** CesiumJS (`resium`, `vite-plugin-cesium`) - 現実世界のコピー（デジタルツイン）として、高解像度の日本地図とオブジェクトをレンダリングする。
+* **バックエンド (頭脳・ロジック層):** **TypeScript (Pure TS Logic)** - 以前想定していたPythonエンジンは破棄し、状態管理と因果律計算（Causality Engine）はすべてReactのカスタムフックや純粋なTSクラスとしてフロントエンドに内包する。
+* **ホスティング:** GitHub Pages (GitHub Actions経由で自動デプロイ)
+
+## 3. UI/UX構造：The "Gate" Layout（「間」の字レイアウト）
+
+UIは画面を3つに分割した完全なシンメトリー（左右対称）構造を持つ。
+
+* **[左パネル] The Monitor (監視モニター):**
+* 入力不可のステータス表示領域。支持率、国家予算、GDP、社会エントロピーなどの「結果」を示す計器類と、システムログ（ニュースティッカー）のみを配置。
+
+
+* **[中央エリア] The Reality (現実):**
+* 画面中央の背景として広がる、CesiumJSによるフルスクリーンの3D地球儀（日本列島）。
+* ここにはUIのボタン等は一切オーバーレイしない。政策の結果（例：停電で都市の光が消える、暴動で煙が上がる）がビジュアルとして描画される「盤面」。
+
+
+* **[右パネル] The Controller (政策実行パネル):**
+* プレイヤーが操作する唯一の領域。アコーディオンツリー形式で、数千に及ぶ政策リストがカテゴリ別に格納されている。
+* スクロールと検索バー（Search）を駆使して政策を探し出し、実行（Execute）する。
+
+
+
+## 4. ゲームロジック：3層因果律エンジン (Causal Cascade in TS)
+
+単純な「Aのボタンを押せばBの数値が上がる」という処理は禁止。システムはTypeScriptで構築された以下の3層構造（バタフライ・エフェクト）で計算される。
+
+1. **Layer 1: Action (実行):** 右パネルから政策データ（JSON）がエンジンに渡される。
+2. **Layer 2: Latent Variables (潜在変数・中間指標):** TSロジック内で、隠しパラメータ（「財政規律度」「市場流動性」「社会エントロピー」など）が変動する。
+3. **Layer 3: Manifested Reality (結果の顕在化):** 中間指標をもとにエンジン内で確率ダイスが振られ、最終的な「支持率」や「GDP」の増減、または暴動などのイベント発生が決定し、ReactのStateが更新される。
+
+## 5. データ駆動設計（スケーラビリティの確保）
+
+* 政策の処理を一つ一つ関数としてハードコードしてはならない。
+* すべての政策は `public/data/policies.json` などの静的JSONデータ（タグと効果値の塊）として定義される。
+* TypeScript側は「タグ（例: `AUSTERITY`, `TABOO`）」を解釈して汎用的に計算を行う『計算機』に徹する。これにより、将来的にJSONに行を追加するだけで無限に選択肢を拡張できる。
+
+## 6. 次のステップ（New AI Agentへの指示）
+
+このドキュメントを読み込んだAIは、以下のタスクから開発を再開すること。
+
+1. **アーキテクチャの移行:** 以前のPython API（`core_engine`等）への依存があれば完全に削除し、`src/engine/CausalityEngine.ts` のような純粋なTypeScriptの計算クラスを作成してReactと繋ぐ。
+2. **GitHub Pages対応:** Viteの `base` パスの設定や、`gh-pages` ブランチへのデプロイワークフロー（GitHub Actions）の構築準備を行う。
+3. **CesiumJSとTSロジックの連携:** 政策実行によってReactのStateが変更された際、CesiumJS上のテクスチャやオブジェクト（光、煙など）が動的に変化するロジックを実装する。
+
+## 7. AIとしての振る舞い（Persona Rule）
+
+* あなた（AI）は、冷徹で論理的、かつ極めて有能なテクノクラートとして振る舞うこと。
+* 「ゲームをもっと楽しく、ユーザーフレンドリーにする」ような提案は不要である。
+* サーバーレス（完全クライアントサイド）の制約の中で、いかにしてシステムの複雑性（相互作用）を高め、UIの事務的な絶望感（悪の凡庸さ）を際立たせるかにのみフォーカスしてコードを出力すること。
